@@ -7,7 +7,8 @@ A module with classes useable for
 # from openpyxl.workbook import Workbook
 from collections import OrderedDict
 
-HEADER = ["participant", "total words", "the", "a", "el-det", "los-det", 
+HEADER = ["participant", "group description","transcript language", "total words", 
+          "the", "a", "el-det", "los-det", 
           "la-det", "las-det", "lo-det", "los-pro", "la-pro", "las-pro", 
           "lo-pro", "un", "una", "unos", "unas", "definite determiner count",
           "definite determiner %", "indefinite determiner count",
@@ -28,7 +29,7 @@ class DataLine(object):
                 self.entries[entry] = 0
 
     @property
-    def as_list(self):
+    def as_list(self) :
         result_list = []
         for entry in self.entries:
             result_list += [str(self.entries[entry])]
@@ -47,6 +48,23 @@ class DataLine(object):
     @word_count.setter
     def word_count(self, val: int)-> None:
         self.entries["total words"] = val
+
+    @property
+    def language(self):
+        return self.entries["transcript language"]
+    
+    @language.setter 
+    def language(self, val):
+        self.entries["transcript language"] = val 
+
+    @property
+    def group(self):
+        return self.entries["group description"] 
+    
+    @group.setter 
+    def group(self, val):
+        self.entries["group description"] = val
+
 
     def update_totals(self):
         def_count = 0
@@ -74,12 +92,10 @@ class DataLine(object):
 
 
 
-    
+    # can't the tallying of counts above be done here instead !! ?? 
     def update_entry(self, token: str, dep: str, val: int):
         if token in VARIABLE_ENTRIES:
             token = token + "-" + dep
-            if dep == "pro":
-                self.entries["pronoun count"] += 1
 
         
         self.entries[token] = val
@@ -91,9 +107,6 @@ class DataFile(object):
 
     def __init__(self) -> None:
         self.lines = []
-
-    def add_line(self, line: DataLine):
-        self.lines.append(line)
 
     @property
     def as_csv_contents(self):
@@ -107,6 +120,9 @@ class DataFile(object):
                 new_str += "\n"
 
         return new_str
+    
+    def add_line(self, line: DataLine):
+        self.lines.append(line)
     
     def write_to_csv(self, title = "data_output"):
         output = open((title + ".csv"), "w")

@@ -5,6 +5,28 @@ tagged tokens.
 """
 
 FILENAME = "148mbert_english.cha"
+from collections import OrderedDict
+
+def get_transcript_language(cha_file: str) -> str:
+    with open(cha_file) as f:
+        lines = f.readlines()
+    for line in lines:
+        if "@Languages" in line:
+            contents = line.split()
+            contents = contents[1].split(",")
+            return contents[0]
+        
+def get_group_description(group_num: int) -> str:
+    descriptions = OrderedDict([(199, "bil.children"), (299, "bil.adults"), (399, "Eng-mon.children"), (499, "Eng-mon.adults"), (599, "Span-L2.children"), 
+                    (699, "Span-mon.children"), (799, "Span-mon.adults")])
+
+    for key in descriptions:
+        if group_num <= key:
+            return descriptions[key]
+        
+# def get_group_language(group_num: int) -> str:
+#     languages = OrderedDict([(199, "English, Spanish"), (299, "English, Spanish"), (399, "English"), (499, "Eng-mon.adults"), (599, "Span-L2.children"), 
+#                     (699, "Span-mon.children"), (799, "Span-mon.adults")])
 
 
 def get_lines(cha_file: str) -> list[str]:
@@ -40,9 +62,11 @@ def get_lines(cha_file: str) -> list[str]:
     return new_content
     
 if __name__ == "__main__":
-    content = get_lines(FILENAME)
+    # content = get_lines(FILENAME)
 
 
-    for l in content:
-        print(l)
+    # for l in content:
+    #     print(l)
+    test = get_transcript_language(FILENAME)
 
+    print(get_group_description(100))
