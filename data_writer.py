@@ -7,16 +7,33 @@ A module with classes useable for
 # from openpyxl.workbook import Workbook
 from collections import OrderedDict
 
-HEADER = ["participant", "group description","transcript language", "total words", 
-          "the", "a", "el-det", "los-det", 
-          "la-det", "las-det", "lo-det", "los-pro", "la-pro", "las-pro", 
-          "lo-pro", "un", "una", "unos", "unas", "definite determiner count",
-          "definite determiner %", "indefinite determiner count",
-          "indefinite determiner %", "pronoun count", "pronoun %"]
-VARIABLE_ENTRIES = ["el", "los", "la", "las", "lo"]
+
+
+
+
 DEFINITES = ["the",  "el-det", "los-det", "la-det", "las-det", "lo-det"]
 INDEFINITES = ["a", "un", "una", "unos", "unas"]
-PRONOUNS = ["los-pro", "la-pro", "las-pro", "lo-pro"]
+PRONOUNS = ["los-pro", "la-pro", "las-pro", "lo-pro", 
+            "me", "him", "her-pro", "us", "them", "you", "it", "le", "les", "se",  #obj pronouns - but it and you can be obj or subj
+            "I", "he", "she", "we", "they", "yo", "tu", "él", "ella", "nosotros", "ellos", "ellas"] # subj pronouns
+POSSESSIVES = ["my", "his", "her-det", "its", "our", "your", "their",
+               "su", "sus"]
+NAMES = ["little red riding hood", "girl", "grandmother", "grandma", "wolf", "animal", "hunter", "man", "mother", "woodcutter",
+         "caperucita roja", "niña", "abuela", "abuelita", "lobo", "cazador", "hombre", "madre", "leñador"]
+
+HEADER_START = ["participant", "group description","transcript language", "total words"]
+HEADER_TOKENS = DEFINITES + INDEFINITES + POSSESSIVES + PRONOUNS 
+
+HEADER_TOTALS = ["definite determiner count",
+                 "definite determiner %", "indefinite determiner count",
+                 "indefinite determiner %", "possessive determiner count",
+                 "possessive determiner %", "name count", "name %",
+                 "pronoun count", "pronoun %"]
+
+HEADER = HEADER_START + HEADER_TOKENS + NAMES + HEADER_TOTALS
+
+# tally unique items distinguished by hyphens for reference
+VARIABLE_ENTRIES = list(set([x.split("-")[0] for x in HEADER_TOKENS if "-" in x ]))
 
 class DataLine(object):
     
@@ -69,25 +86,35 @@ class DataLine(object):
     def update_totals(self):
         def_count = 0
         indef_count = 0
+        pos_count = 0
         pro_count = 0
+        name_count = 0
         for entry in self.entries:
             if entry in DEFINITES:
                 def_count += self.entries[entry] 
             elif entry in INDEFINITES:
                 indef_count += self.entries[entry] 
+            elif entry in POSSESSIVES:
+                pos_count += self.entries[entry] 
             elif entry in PRONOUNS:
                 pro_count += self.entries[entry] 
+            elif entry in NAMES:
+                name_count += self.entries[entry] 
             
         self.entries["definite determiner count"] = def_count
         self.entries["indefinite determiner count"] = indef_count
+        self.entries["possessive determiner count"] = pos_count
         self.entries["pronoun count"] = pro_count
+        self.entries["name count"] = name_count
 
         if self.word_count == 0:
             return
         else:
             self.entries["definite determiner %"]  = round((def_count*100)/self.word_count, 2)
             self.entries["indefinite determiner %"]  = round((indef_count*100)/self.word_count, 2)
+            self.entries["possessive determiner %"]  = round((pos_count*100)/self.word_count, 2)
             self.entries["pronoun %"]  = round((pro_count*100)/self.word_count, 2)
+            self.entries["name %"]  = round((name_count*100)/self.word_count, 2)
         
 
 
@@ -143,11 +170,12 @@ class DataFile(object):
     #     wb.save(filename = file_name)
 
 if __name__ == "__main__":
-    data =  DataFile()
-    data.add_line(DataLine(101))
-    data.add_line(DataLine(203))
+    print(VARIABLE_ENTRIES)
+    # data =  DataFile()
+    # data.add_line(DataLine(101))
+    # data.add_line(DataLine(203))
 
-    data.write_to_xlsx()
+    # data.write_to_xlsx()
     #print(data.as_csv_contents)
 
 

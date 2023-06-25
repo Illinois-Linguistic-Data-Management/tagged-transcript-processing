@@ -48,4 +48,39 @@ def count_dep(text : str, word : str, pos : str = None) -> int:
 
     return counter
 
+def count_name(text : str, name : str):
+    """
+    Given a tagged text and a space-separated name, 
+    count all occurences of that name 
+    """
+    tokens = text.split(" ")
+    name_parts = name.split()
+    counter = 0
+    for i, token in enumerate(tokens):
+        
+
+        current_word = token.split(".")[0].lower()
+        
+        # potential match detected
+        if current_word == name_parts[-1].lower():
+            
+            # see if all of the name is matched
+            matched_parts = 0
+            for j in range(-1, -len(name_parts)-1, -1):
+                #print(current_word, name_parts[j].lower(), tokens[i + j + 1].split(".")[0].lower(), matched_parts)
+                if -j <= (i+ 1) and name_parts[j].lower() == tokens[i + j + 1].split(".")[0].lower():
+                    matched_parts += 1 
+                    #print(matched_parts)
+            
+            if matched_parts == len(name_parts):
+                counter += 1
+
+    return counter
+    
+
+if __name__ == "__main__":
+    print(count_name("John.blah smith.blah blah blah blah john smith blah. blah blah blah blah. John Smith blah a b blah john Smith.", "John Smith"))  
+        
+
+
 

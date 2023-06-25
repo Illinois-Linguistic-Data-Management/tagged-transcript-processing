@@ -12,7 +12,8 @@ BACKSLASH = "\\"
 INPUT_DIR = f"input{BACKSLASH}"
 FILENAMES = os.listdir(INPUT_DIR)
 # the tokens to look at 
-TOKENS = ["a", "the", "el-det", "los-det", "la-det", "las-det", "lo-det", "los-pro", "la-pro", "las-pro", "lo-pro", "un", "una", "unos", "unas"]
+TOKENS = data_writer.HEADER_TOKENS
+NAMES = data_writer.NAMES
 
 texts = OrderedDict()
 
@@ -60,6 +61,10 @@ for file_prefix in texts:
         # update with results
 
         new_data_line.update_entry(token, dep, count)
+    # investigate names separately
+    for name in NAMES:
+        count = analysis.count_name(doc, name)
+        new_data_line.update_entry(name, "", count)
 
     new_data_line.update_totals()
     data.add_line(new_data_line)
