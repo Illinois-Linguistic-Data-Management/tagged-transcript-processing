@@ -4,12 +4,9 @@ import analysis
 import os
 from collections import OrderedDict
 
-# LANGUAGE = "spanish"
-BACKSLASH = "\\"
-
 # the directory containting files to analyze
-# INPUT_DIR = f"properly_tagged_{LANGUAGE}{BACKSLASH}"
-INPUT_DIR = f"input{BACKSLASH}"
+
+INPUT_DIR = "input\\"
 FILENAMES = os.listdir(INPUT_DIR)
 # the tokens to look at 
 TOKENS = data_writer.HEADER_TOKENS
@@ -53,11 +50,11 @@ for file_prefix in texts:
             dep = token.split("-")[1]
             # find non determiners by removing determiners from total occurances
             if dep == "pro":
-                count = analysis.count_dep(doc, real_token, "PRON") 
+                count = analysis.count_pos(doc, real_token, "PRON") 
             else:
-                count = analysis.count_dep(doc, real_token,  dep.upper())
+                count = analysis.count_pos(doc, real_token,  dep.upper())
         else:
-            count = analysis.count_dep(doc, token, dep.upper())
+            count = analysis.count_pos(doc, token, dep.upper())
         # update with results
 
         new_data_line.update_entry(token, dep, count)

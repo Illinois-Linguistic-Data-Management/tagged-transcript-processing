@@ -67,6 +67,10 @@ if __name__ == "__main__":
 
     # for l in content:
     #     print(l)
-    test = get_transcript_language(FILENAME)
+    test = " ".join(get_lines(FILENAME))
+    test2 = test.split()
+    test3 = " ". join([x.split(".")[0] for x in test.split()])
 
-    print(get_group_description(100))
+
+    print(test)
+    print(test3)

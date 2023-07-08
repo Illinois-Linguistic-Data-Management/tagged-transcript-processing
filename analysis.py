@@ -7,9 +7,7 @@ def count_words(text : str) -> int:
     Given a tagged text, counts all the words (tokens other than punctuation)
     in it
     """
-
     counter = 0
-
     
     tokens = text.split(" ")
     for token in tokens:
@@ -20,10 +18,10 @@ def count_words(text : str) -> int:
 
     return counter
 
-def count_dep(text : str, word : str, pos : str = None) -> int:
+def count_pos(text : str, word : str, pos : str = None) -> int:
     """
-    Given a tagged text, a word, and optionally a dependency, 
-    find all matches. If no dependency is provided, just find
+    Given a tagged text, a word, and optionally a part of speech, 
+    find all matches. If no part of speech is provided, just find
     all occurences of the word.
     """
     tokens = text.split(" ")

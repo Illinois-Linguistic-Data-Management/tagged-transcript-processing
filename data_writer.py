@@ -7,10 +7,6 @@ A module with classes useable for
 # from openpyxl.workbook import Workbook
 from collections import OrderedDict
 
-
-
-
-
 DEFINITES = ["the",  "el-det", "los-det", "la-det", "las-det", "lo-det"]
 INDEFINITES = ["a", "un", "una", "unos", "unas"]
 PRONOUNS = ["los-pro", "la-pro", "las-pro", "lo-pro", 
@@ -19,16 +15,16 @@ PRONOUNS = ["los-pro", "la-pro", "las-pro", "lo-pro",
 POSSESSIVES = ["my", "his", "her-det", "its", "our", "your", "their",
                "su", "sus"]
 NAMES = ["little red riding hood", "girl", "grandmother", "grandma", "wolf", "animal", "hunter", "man", "mother", "woodcutter",
-         "caperucita roja", "niña", "abuela", "abuelita", "lobo", "cazador", "hombre", "madre", "leñador"]
+         "caperucita roja", "caperucita", "niña", "abuela", "abuelita", "lobo", "cazador", "hombre", "madre", "leñador"]
 
 HEADER_START = ["participant", "group description","transcript language", "total words"]
 HEADER_TOKENS = DEFINITES + INDEFINITES + POSSESSIVES + PRONOUNS 
 
-HEADER_TOTALS = ["definite determiner count",
-                 "definite determiner %", "indefinite determiner count",
-                 "indefinite determiner %", "possessive determiner count",
-                 "possessive determiner %", "name count", "name %",
-                 "pronoun count", "pronoun %"]
+# things we want to find the total counts and percents for
+TOTALS = ["definite determiner", "indefinite determiner", "possessive determiner", "name", "pronoun"] 
+
+# make columns for count and % of each quantity totaled
+HEADER_TOTALS = [f(x) for x in TOTALS for f in [lambda x : x + " count", lambda x : x +" %"]] 
 
 HEADER = HEADER_START + HEADER_TOKENS + NAMES + HEADER_TOTALS
 
@@ -51,7 +47,6 @@ class DataLine(object):
         for entry in self.entries:
             result_list += [str(self.entries[entry])]
         return result_list
-
 
     @property
     def as_csv_line(self) -> str:
@@ -171,6 +166,7 @@ class DataFile(object):
 
 if __name__ == "__main__":
     print(VARIABLE_ENTRIES)
+    print (HEADER_TOTALS)
     # data =  DataFile()
     # data.add_line(DataLine(101))
     # data.add_line(DataLine(203))
