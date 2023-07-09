@@ -28,6 +28,8 @@ def get_group_description(group_num: int) -> str:
 #     languages = OrderedDict([(199, "English, Spanish"), (299, "English, Spanish"), (399, "English"), (499, "Eng-mon.adults"), (599, "Span-L2.children"), 
 #                     (699, "Span-mon.children"), (799, "Span-mon.adults")])
 
+def get_text(cha_file: str) -> str:
+    return " ".join(get_lines(cha_file))
 
 def get_lines(cha_file: str) -> list[str]:
     """

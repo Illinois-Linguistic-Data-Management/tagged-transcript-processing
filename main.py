@@ -2,30 +2,36 @@ import tagged_cha_reader
 import data_writer
 import analysis
 import os
-from collections import OrderedDict
+import platform
 
+# choose appropriate separator based 
+if platform.system() == "Windows":
+    BACKSLASH = "\\"
+else:
+    BACKSLASH = "/"
+    
 # the directory containting files to analyze
+INPUT_DIR = f"input{BACKSLASH}"
 
-INPUT_DIR = "input\\"
 FILENAMES = os.listdir(INPUT_DIR)
 # the tokens to look at 
 TOKENS = data_writer.HEADER_TOKENS
 NAMES = data_writer.NAMES
 
-texts = OrderedDict()
+texts = {}
 
 # extract texts from files and index them by speaker
 for file_name in FILENAMES:
     # use the filename as a key instead
     file_prefix = file_name.split(".")[0]
-    new_text = " ".join(tagged_cha_reader.get_lines(INPUT_DIR + file_name))
+    new_text = tagged_cha_reader.get_text(INPUT_DIR + file_name)
 
 
     texts[file_prefix] = new_text
 
 data = data_writer.DataFile()
 
-for file_prefix in texts:
+for file_prefix in sorted(texts.keys()):
     # initialize DataLine and text
     text_num = int(file_prefix[0:3])
     new_data_line = data_writer.DataLine(text_num)
