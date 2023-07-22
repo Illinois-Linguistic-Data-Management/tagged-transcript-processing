@@ -4,13 +4,13 @@ import analysis
 import os
 import platform
 
-# choose appropriate separator based 
+# choose appropriate separator based on os
 if platform.system() == "Windows":
     BACKSLASH = "\\"
 else:
     BACKSLASH = "/"
     
-# the directory containting files to analyze
+# the directory containing files to analyze
 INPUT_DIR = f"input{BACKSLASH}"
 
 FILENAMES = os.listdir(INPUT_DIR)
@@ -22,12 +22,14 @@ texts = {}
 
 # extract texts from files and index them by speaker
 for file_name in FILENAMES:
-    # use the filename as a key instead
-    file_prefix = file_name.split(".")[0]
-    new_text = tagged_cha_reader.get_text(INPUT_DIR + file_name)
+    # macOS compatibility 
+    if file_name != ".DS_Store":
+        # use the filename as a key instead
+        file_prefix = file_name.split(".")[0]
+        new_text = tagged_cha_reader.get_text(INPUT_DIR + file_name)
 
 
-    texts[file_prefix] = new_text
+        texts[file_prefix] = new_text
 
 data = data_writer.DataFile()
 
