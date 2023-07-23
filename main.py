@@ -22,8 +22,8 @@ texts = {}
 
 # extract texts from files and index them by speaker
 for file_name in FILENAMES:
-    # macOS compatibility 
-    if file_name != ".DS_Store":
+    # macOS compatibility
+    if not file_name.startswith("."):
         # use the filename as a key instead
         file_prefix = file_name.split(".")[0]
         new_text = tagged_cha_reader.get_text(INPUT_DIR + file_name)
