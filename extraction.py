@@ -8,20 +8,20 @@ from collections.abc import Callable
 
 def is_verb(token: str) -> bool:
     """
-    returns true if the token is a verb
+    returns True if the token is a verb
     """
     token_parts = token.split(".")
     return len(token_parts) > 1 and token_parts[1] == "VERB"
 def is_noun(token: str) -> bool:
     """
-    returns true if the token is a noun
+    returns True if the token is a noun
     """
     token_parts = token.split(".")
     return len(token_parts) > 1 and (token_parts[1] == "NOUN" or token_parts[1] == "PRON" or token_parts[1] == "PRO")
 
 def is_det(token:str) -> bool:
     """
-    returns true f the token is a determiner or 
+    returns True f the token is a determiner or 
     something determiner-adjacent
     """
     POSSESSIVES = ["his", "her", "its", "your", "my", "our", "their", "su", "sus", "'s"]
@@ -58,7 +58,7 @@ def matches_text(token : str, text: str) -> bool:
     (case-insensitive), and false otherwise.
     """
     return text.lower() == get_text(token).lower()
-def match_any(token, *words):
+def match_any(token : str, *words : str):
     """
     returns True if token has the same text as any
     of the word in words(case-insensitive), and 
@@ -85,8 +85,8 @@ def extract(text:str, pos:str, token_strings:list[str] = None, scan_forward_limi
         token_strings (str list): an optional list of strings to match on. If given, only tokens with matching text will be collected.
         scan_forward_limit (int): the number of tokens after a match to add to the token's contex
         scan_backward_limit (int): the number of tokens before a match to add to the token's context
-        forward_target_detected (str -> bool): a callable to check whether a token in front of the match is a context boundary. 
-        backward_target_detected (str -> bool): a callable to check whether a token before the match is a context boundary. 
+        forward_target_detected (str) -> bool: a callable to check whether a token in front of the match is a context boundary. 
+        backward_target_detected (str) -> bool: a callable to check whether a token before the match is a context boundary. 
 
     Returns:
         str list : a list of extracted contexts
