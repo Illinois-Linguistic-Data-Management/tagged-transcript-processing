@@ -12,19 +12,32 @@ def is_verb(token: str) -> bool:
     """
     token_parts = token.split(".")
     return len(token_parts) > 1 and token_parts[1] == "VERB"
-def is_noun(token):
+def is_noun(token: str) -> bool:
     """
     returns true if the token is a noun
     """
     token_parts = token.split(".")
     return len(token_parts) > 1 and (token_parts[1] == "NOUN" or token_parts[1] == "PRON" or token_parts[1] == "PRO")
 
-def get_text(token):
+def is_det(token:str) -> bool:
+    """
+    returns true f the token is a determiner or 
+    something determiner-adjacent
+    """
+    POSSESSIVES = ["his", "her", "its", "your", "my", "our", "their", "su", "sus", "'s"]
+    MERGED = ["del", "al"]
+    if get_pos(token) == "DET":
+        return True 
+    elif get_text(token) in POSSESSIVES or get_text(token) in MERGED:
+        return True 
+    return False
+
+def get_text(token: str) -> str:
     """
     get the text component of the token
     """
     return token.split(".")[0] 
-def get_pos(token):
+def get_pos(token: str) -> str:
     """
     get the part of speech component of the token
     """
@@ -72,8 +85,8 @@ def extract(text:str, pos:str, token_strings:list[str] = None, scan_forward_limi
         token_strings (str list): an optional list of strings to match on. If given, only tokens with matching text will be collected.
         scan_forward_limit (int): the number of tokens after a match to add to the token's contex
         scan_backward_limit (int): the number of tokens before a match to add to the token's context
-        forward_target_detected (str -> bool): a callable to check whether a token in front of the match is a context boundary. If given, overides scan_forward_limit
-        backward_target_detected (str -> bool): a callable to check whether a token before the match is a context boundary. If given, overides scan_backward_limit
+        forward_target_detected (str -> bool): a callable to check whether a token in front of the match is a context boundary. 
+        backward_target_detected (str -> bool): a callable to check whether a token before the match is a context boundary. 
 
     Returns:
         str list : a list of extracted contexts
@@ -95,8 +108,19 @@ def extract(text:str, pos:str, token_strings:list[str] = None, scan_forward_limi
     for i, token in enumerate(tokens):
 
         # these functions check whether enough context has been collected on each end
-        backward_limit_not_reached = lambda x : x >= 0 and  (backward_target_detected or i - x <= scan_backward_limit)
-        forward_limit_not_reached = lambda x :  x < len(tokens) and  (forward_target_detected or x - i <= scan_forward_limit)
+        if scan_backward_limit and backward_target_detected:
+            # this returns false if either the backtrack distance is too high or a target is detected
+            backward_limit_not_reached = lambda x : x >= 0 and  backward_target_detected and i - x <= scan_backward_limit 
+        else:
+            # this returns false if both the backtrack distance is too high and a target is detected
+            backward_limit_not_reached = lambda x : x >= 0 and  (backward_target_detected or i - x <= scan_backward_limit)
+
+        if scan_forward_limit and forward_target_detected:
+            # this returns false if either the forward distance is too high or a target is detected
+            forward_limit_not_reached = lambda x :  x < len(tokens) and  forward_target_detected and x - i <= scan_forward_limit
+        else:
+            # this returns false if both the forward distance is too high and a target is detected
+            forward_limit_not_reached = lambda x :  x < len(tokens) and  (forward_target_detected or x - i <= scan_forward_limit)
 
         if detected(token):
             context = get_text(token)
@@ -146,7 +170,9 @@ if __name__ == "__main__":
     extractors = {"a_and_als": lambda text : extract(text, "ADP", token_strings=["a", "al"], 
                                                      forward_target_detected= is_noun, 
                                                      backward_target_detected = is_verb), 
-                  "verbs" : lambda text : extract(text, "VERB", forward_target_detected= is_noun)}
+                  "verbs" : lambda text : extract(text, "VERB", forward_target_detected= is_noun),
+                  "test"  : lambda text : extract(text, "NOUN", scan_backward_limit= 7, 
+                                                  backward_target_detected= is_det)}
     # create a csv file for each extractor
     for extractor_name in extractors:
         output = open(f"{extractor_name}_extraction_results.csv", "w")
@@ -175,7 +201,9 @@ if __name__ == "__main__":
                                 new_result += char
                         result = new_result
                     # create new csv line with data
-                    line = f"{text_num},{group_num},{i + 1},{result}\n"
+                    line = f"{text_num},{group_num},{i + 1},{result}"
+                    if i < len(results):
+                        line += "\n"
                     lines += line 
 
         output.write(lines)
