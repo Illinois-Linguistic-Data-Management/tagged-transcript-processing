@@ -19,7 +19,7 @@ def is_noun(token: str) -> bool:
     token_parts = token.split(".")
     return len(token_parts) > 1 and (token_parts[1] == "NOUN" or token_parts[1] == "PRON" or token_parts[1] == "PRO")
 
-def is_det(token:str) -> bool:
+def is_det(token: str) -> bool:
     """
     returns True f the token is a determiner or 
     something determiner-adjacent
@@ -70,8 +70,8 @@ def match_any(token : str, *words : str):
     return False
 
 
-def extract(text:str, pos:str, token_strings:list[str] = None, scan_forward_limit:int = 0, scan_backward_limit:int = 0, 
-            forward_target_detected: Callable[[str], bool] = None, backward_target_detected:Callable[[str], bool] = None) -> list[str]:
+def extract(text: str, pos: str, token_strings: list[str] = None, scan_forward_limit: int = 0, scan_backward_limit: int = 0, 
+            forward_target_detected: Callable[[str], bool] = None, backward_target_detected: Callable[[str], bool] = None) -> list[str]:
     """
     Given a text, a target part of speech, and optionally target text content, numerical limits on forward 
     and backward scanning, and functions to trigger an end of scan, searches the text for occurences of the
@@ -175,14 +175,14 @@ if __name__ == "__main__":
                                                   backward_target_detected= is_det)}
     # create a csv file for each extractor
     for extractor_name in extractors:
-        output = open(f"{extractor_name}_extraction_results.csv", "w")
+        output = open(f"{extractor_name}_extraction_results_spanish.csv", "w")
         extractor = extractors[extractor_name]
         # start with header line
         lines = f"participant,group,instance,example\n"
         
         for file_name in sorted(FILENAMES):
-            # needed for macOS
-            if file_name != ".DS_Store":
+            # DS_Store check needed for macOS; only process spanish language texts here
+            if file_name != ".DS_Store" and tagged_cha_reader.get_transcript_language(f"input{BACKSLASH}{file_name}") != "eng":
                 text = tagged_cha_reader.get_text(INPUT_DIR + file_name)
                 prefix = file_name.split(".")[0]
                 text_num = int(prefix[0:3])
