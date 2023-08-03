@@ -21,7 +21,7 @@ def is_noun(token: str) -> bool:
 
 def is_det(token: str) -> bool:
     """
-    returns True f the token is a determiner or 
+    returns True if the token is a determiner or 
     something determiner-adjacent
     """
     POSSESSIVES = ["his", "her", "its", "your", "my", "our", "their", "su", "sus", "'s"]
@@ -162,7 +162,6 @@ if __name__ == "__main__":
         
     # the directory containing files to analyze
     INPUT_DIR = f"input{BACKSLASH}"
-    OUTPUT_DIR = f"contexts{BACKSLASH}"
 
     FILENAMES = os.listdir(INPUT_DIR)
 
@@ -172,7 +171,10 @@ if __name__ == "__main__":
                                                      backward_target_detected = is_verb), 
                   "verbs" : lambda text : extract(text, "VERB", forward_target_detected= is_noun),
                   "test"  : lambda text : extract(text, "NOUN", scan_backward_limit= 7, 
-                                                  backward_target_detected= is_det)}
+                                                  backward_target_detected= is_det),
+                  "subjects_and_verbs": lambda text : extract(text, "VERB", scan_backward_limit= 7, 
+                                                  scan_forward_limit= 2)
+                                                  }
     # create a csv file for each extractor
     for extractor_name in extractors:
         output = open(f"{extractor_name}_extraction_results_spanish.csv", "w")
